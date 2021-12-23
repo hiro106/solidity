@@ -67,7 +67,7 @@ get_logfile_basename() {
 # long-running test cases are next to each other.
 CIRCLE_NODE_INDEX=$(((CIRCLE_NODE_INDEX + 23 * INDEX_SHIFT) % CIRCLE_NODE_TOTAL))
 
-CPUs=2
+CPUs=3
 for run in $(seq 0 $((CPUs - 1)))
 do
     BOOST_TEST_ARGS_RUN=(
