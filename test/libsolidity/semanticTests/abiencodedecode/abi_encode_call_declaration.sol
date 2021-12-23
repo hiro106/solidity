@@ -34,6 +34,11 @@ contract C is Base {
         r += abi.decode(result, (uint));
         require(r == 1115);
 
+        (success, result) = address(this).staticcall(abi.encodeCall(C.b, 10000));
+        require(success && result.length == 32);
+        r += abi.decode(result, (uint));
+        require(r == 11116);
+
         return r;
 	}
     function b(uint x) external view returns (uint) {
@@ -45,4 +50,4 @@ contract C is Base {
 // ====
 // compileViaYul: also
 // ----
-// test() -> 1115
+// test() -> 11116
