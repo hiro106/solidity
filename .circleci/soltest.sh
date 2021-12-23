@@ -59,7 +59,7 @@ get_logfile_basename() {
     echo -ne "${filename}"
 }
 
-[ -z "$CIRCLE_NODE_TOTAL" -o "$CIRCLE_NODE_TOTAL" = 0 ] && CIRCLE_NODE_TOTAL=1
+[ -z "$CIRCLE_NODE_TOTAL" ] || [ "$CIRCLE_NODE_TOTAL" = 0 ] && CIRCLE_NODE_TOTAL=1
 [ -z "$CIRCLE_NODE_INDEX" ] && CIRCLE_NODE_INDEX=0
 [ -z "$INDEX_SHIFT" ] && INDEX_SHIFT=0
 
@@ -73,7 +73,7 @@ do
     BOOST_TEST_ARGS_RUN=(
         "--color_output=no"
         "--show_progress=yes"
-        "--logger=JUNIT,error,test_results/$(get_logfile_basename $run).xml"
+        "--logger=JUNIT,error,test_results/$(get_logfile_basename "$run").xml"
         "${BOOST_TEST_ARGS[@]}"
     )
     SOLTEST_ARGS=("--evm-version=$EVM" "${SOLTEST_FLAGS[@]}")
@@ -81,11 +81,11 @@ do
     test "${OPTIMIZE}" = "1" && SOLTEST_ARGS+=(--optimize)
     test "${ABI_ENCODER_V1}" = "1" && SOLTEST_ARGS+=(--abiencoderv1)
 
-    BATCH_ARGS="--batches $((CPUs * CIRCLE_NODE_TOTAL)) --selected-batch $((CPUs * CIRCLE_NODE_INDEX + run))"
+    BATCH_ARGS=("--batches" "$((CPUs * CIRCLE_NODE_TOTAL))" "--selected-batch" "$((CPUs * CIRCLE_NODE_INDEX + run))")
 
     echo "Running ${REPODIR}/build/test/soltest ${BOOST_TEST_ARGS_RUN[*]} -- ${SOLTEST_ARGS[*]}"
 
-    "${REPODIR}/build/test/soltest" -l test_suite "${BOOST_TEST_ARGS_RUN[@]}" -- "${SOLTEST_ARGS[@]}" ${BATCH_ARGS} &
+    "${REPODIR}/build/test/soltest" -l test_suite "${BOOST_TEST_ARGS_RUN[@]}" -- "${SOLTEST_ARGS[@]}" "${BATCH_ARGS[@]}" &
 done
 
 wait

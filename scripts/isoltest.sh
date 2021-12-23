@@ -9,8 +9,8 @@ for batch in $(seq $BATCHES)
 do
     exec "${REPO_ROOT}/build/test/tools/isoltest" \
         --testpath "${REPO_ROOT}/test" \
-        --batches $BATCHES \
-        --selected-batch $(($batch - 1)) \
-        $* &
+        --batches "$BATCHES" \
+        --selected-batch $((batch - 1)) \
+        "$@" &
 done
 wait
