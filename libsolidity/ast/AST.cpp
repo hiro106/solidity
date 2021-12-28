@@ -514,20 +514,16 @@ ModifierDefinition const& ModifierDefinition::resolveVirtual(
 	solAssert(_searchStart == nullptr, "Used super in connection with modifiers.");
 
 	// If we are not doing super-lookup and the modifier is not virtual, we can stop here.
-	if (_searchStart == nullptr && !virtualSemantics())
+	if (!virtualSemantics())
 		return *this;
 
 	solAssert(!dynamic_cast<ContractDefinition const&>(*scope()).isLibrary(), "");
 
 	for (ContractDefinition const* c: _mostDerivedContract.annotation().linearizedBaseContracts)
-	{
-		if (_searchStart != nullptr && c != _searchStart)
-			continue;
-		_searchStart = nullptr;
 		for (ModifierDefinition const* modifier: c->functionModifiers())
 			if (modifier->name() == name())
 				return *modifier;
-	}
+
 	solAssert(false, "Virtual modifier " + name() + " not found.");
 	return *this; // not reached
 }
